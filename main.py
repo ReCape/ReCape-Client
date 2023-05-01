@@ -10,10 +10,10 @@ import sys
 
 DEBUG = os.path.exists(".debug")
 
-VERSION = "0.0"
+VERSION = "1.0"
 
 RECAPE_URL = "https://localhost" if DEBUG else "https://recape-server.boyne.dev"
-#URL = "http://192.168.1.36:80/"
+RECAPE_AUTH_SERVER = "recape-server.boyne.dev"
 
 installer = Installer(RECAPE_URL, DEBUG)
 
@@ -21,7 +21,8 @@ QUOTE = """doodle doot doo, doodle doot doo (do)
 i love you
 no i don't, yes i do,
 is that true?
-is love just an illusion?"""
+is love just an illusion?
+(yes)"""
 
 ABOUT = """ReCape Desktop Client v""" + VERSION + """
 Created by DedFishy
@@ -93,7 +94,10 @@ def load_logged_in_page():
         unload_logged_in_tabs()
         return
 
-    result = result.json()
+    try:
+        result = result.json()
+    except requests.exceptions.JSONDecodeError:
+        return
 
     print(result)
 
@@ -115,6 +119,10 @@ def load_logged_in_page():
     page.update()
 
 def load_capes():
+    if not os.path.exists("assets"):
+        os.mkdir("assets")
+    if not os.path.exists("assets/capes"):
+        os.mkdir("assets/capes")
     controls["cape_grid"].controls = []
     controls["cape_grid"].controls.append(CapeButton("no-cape.png", "No Cape", "none"))
     controls["cape_grid"].controls.append(CapeButton("cloaks-plus.png", "Use Cloaks+ Cape", "cloaksplus"))
@@ -133,6 +141,8 @@ def load_models():
 
     if not models:
         models = []
+    if not config:
+        config = {"username": "", "password": ""}
 
     for model in models:
         print("Adding model...")
@@ -517,7 +527,7 @@ tabs = [
     ft.Container(
     ft.Column([
     
-        ft.Text("In Minecraft, connect to verify.recape.boyne.dev to receive your code"),
+        ft.Text("In Minecraft, connect to " + RECAPE_AUTH_SERVER + " to receive your code"),
         
         add_control("server_code", ft.TextField(label="Code")),
         ft.ElevatedButton("Verify with Server", on_click=lambda ev: API.attempt_login_code()),

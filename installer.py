@@ -21,7 +21,7 @@ class Installer:
             self.hosts_file_dir = "/etc/hosts"
 
         self.OPTIFINE_URL = "s.optifine.net"
-        self.RECAPE_URL = RECAPE_URL
+        self.RECAPE_URL = RECAPE_URL.replace("https://", "")
 
         if DEBUG:
             self.RECAPE_IP = "127.0.0.1"
