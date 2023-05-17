@@ -5,7 +5,7 @@ import os
 import json
 import webbrowser
 import mojang
-from installer import Installer
+from hosts import Installer
 import sys
 
 DEBUG = os.path.exists(".debug")

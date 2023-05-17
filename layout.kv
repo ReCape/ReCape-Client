@@ -2,7 +2,7 @@
 #:import hex kivy.utils.get_color_from_hex
 #:import url webbrowser.open
 #:import recape recape_api
-#:import installer installer
+#:import hosts hosts
 
 <PopupBox>:
     pop_up_text: _pop_up_text
@@ -250,10 +250,10 @@ TabbedPanel:
                 
                 AutoButton:
                     text: "Install"
-                    on_release: app.run_with_popup(installer.install, "Installing...", [], True)
+                    on_release: app.run_with_popup(hosts.install, "Installing...", [], True)
                 AutoButton:
                     text: "Uninstall"
-                    on_release: app.run_with_popup(installer.uninstall, "Uninstalling...", [], True)
+                    on_release: app.run_with_popup(hosts.uninstall, "Uninstalling...", [], True)
 
     TabbedPanelItem:
         id: cape_tab
