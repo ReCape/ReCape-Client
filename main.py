@@ -24,6 +24,10 @@ from kivy.resources import resource_add_path, resource_find
 
 import mojang
 
+# These are to make sure they get picked up by PyInstaller
+import dns
+import installer
+
 mojangAPI = mojang.API()
 
 DEBUG = os.path.exists(".debug")
