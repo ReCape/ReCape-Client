@@ -1,0 +1,361 @@
+#:kivy 2.1.0
+#:import hex kivy.utils.get_color_from_hex
+#:import url webbrowser.open
+#:import recape recape_api
+#:import installer installer
+
+<PopupBox>:
+    pop_up_text: _pop_up_text
+    dismiss_button: _dismiss_button
+    size_hint: .8, .8
+    auto_dismiss: False
+    title: "Something's Up"
+
+    GridLayout:
+        cols: 1
+        AutoLabel:
+            id: _pop_up_text
+            text: 'There should be a message here. Well, crap.'
+
+        Spacer:
+     
+        AutoButton:
+            id: _dismiss_button
+            text: 'Okay'
+            visible: True
+            disabled: not self.visible
+            on_release: app.pop_up.dismiss()
+
+<HomeLink@Button>:
+    size_hint: [None, None]
+    size: [150, 50]
+<AccountField@TextInput>:
+    size_hint: [1, None]
+    size: [0, 30]
+<AccountButton@AutoButton>:
+    size_hint: [1, None]
+    size: [0, 50]
+
+<AccountLoginType@GridLayout>:
+    cols: 1
+    padding: [20, 20, 20, 20]
+    size_hint_y: None
+    height: self.minimum_height
+
+<InfoLabel@AutoLabel>:
+    font_size: 20
+
+<TextInput>:
+    cursor_color: hex("#000000")
+
+<AutoLabel@Label>:
+    size_hint_x:40
+    text_size: self.width, None
+    size_hint_y: None
+    height: self.texture_size[1] + 10
+<AutoCheckBox@CheckBox>:
+    size_hint_x:10
+    text_size: self.width, None
+    size_hint_y: None
+<AutoButton@Button>:
+    size_hint_x:40
+    size_hint_y: None
+    height: self.texture_size[1] + 10
+<AutoImage@Image>:
+    size_hint_x:40
+    size_hint_y:40
+    height: self.texture_size[1] + 10
+
+<Spacer@Label>:
+
+<Cape@GridLayout>:
+    cols: 1
+    text: "?"
+    source: "assets/background.png"
+    type: "none"
+    #width: 100
+    #size_hint: (None, 0.4)
+    size_hint: (None, None)
+    size: (200, 250)
+
+    canvas:
+        Color:
+            rgba: hex("#222222")
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [(10,10), (10,10), (10,10), (10,10)]
+
+    AutoImage:
+        source: self.parent.source
+    AutoLabel:
+        text: self.parent.text
+        halign: "justify"
+        font_size: 20
+        size_hint: (1, None)
+    AutoButton:
+        text: "Set"
+        on_release: app.run_with_popup(recape.API.set_cape, "Changing your cape...", [self.parent.text, self.parent.type if self.parent.type != "cape" else self.parent.source], True)
+
+<Model@GridLayout>:
+    name: "model"
+    cols: 1
+    text: "?"
+    activated: False
+    size_hint: (None, None)
+    size: (200, 175)
+
+    canvas:
+        Color:
+            rgba: hex("#222222")
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [(10,10), (10,10), (10,10), (10,10)]
+
+    Label:
+        text: self.parent.text[0]
+        font_size: 120
+        halign: "justify"
+        size_hint: (1, None)
+    AutoLabel:
+        text: self.parent.text
+        halign: "justify"
+        font_size: 20
+        size_hint: (1, None)
+    AutoCheckBox:
+        name: "model_checkbox"
+        text: self.parent.text
+        size: 30, 30
+        active: self.parent.activated
+
+<LoadDialog>:
+    filters: []
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserListView:
+            id: filechooser
+            filters: self.parent.parent.filters
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Load"
+                on_release: root.load(filechooser.path, filechooser.selection)
+
+
+TabbedPanel:
+    do_default_tab: False
+    background_color: [0, 0, 0, 0]
+    canvas.before:
+        Color:
+            rgba: hex("#1A1C1E")
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    TabbedPanelItem:
+        text: "Welcome"
+
+        AnchorLayout:
+            anchor_x: "left"
+            anchor_y: "center"
+
+            Image:
+                source: "assets/background.png"
+                allow_strech: True
+            BoxLayout:
+                size_hint: [1, None]
+                orientation: "vertical"
+                HomeLink:
+                    text: "Join the Discord"
+                    on_release: url("https://discord.com/invite/HNUhexqusj")
+                HomeLink:
+                    text: "Join the Subreddit"
+                    on_release: url("https://www.reddit.com/r/ReCape/")
+                HomeLink:
+                    text: "View the Source"
+                    on_release: url("https://github.com/ReCape")
+
+    TabbedPanelItem:
+        id: log_in_tab
+        text: "Log In"
+        
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+
+            GridLayout:
+                padding: [20, 20, 20, 20]
+                cols: 1
+                rows: 4
+                size_hint_y: None
+                height: self.minimum_height
+                InfoLabel:
+                    text: "You're not logged in yet! You can login with Microsoft by providing your Microsoft email and password. Otherwise, you can connect to our Minecraft server and receive a code to verify your account ownership."
+
+
+                AccountField:
+                    id: mc_username
+                    multiline: False
+                    hint_text: "Your Minecraft In Game Username"
+
+                AccountLoginType:
+                    InfoLabel:
+                        text: "Use the Microsoft account details that are associated with the Minecraft Java Edition account you want to use ReCape with."
+                    AccountField:
+                        id: ms_email
+                        multiline: False
+                        hint_text: "Your Microsoft Account Email Address"
+                    AccountField:
+                        id: ms_password
+                        multiline: False
+                        password: True
+                        hint_text: "Your Microsoft Account Password"
+                    AccountButton:
+                        text: "Login with Microsoft"
+                        on_release: app.run_with_popup(recape.API.attempt_login_ms, "Authenticating with Microsoft...", [root.ids.mc_username.text, root.ids.ms_email.text, root.ids.ms_password.text], True)
+
+                AccountLoginType:
+                    InfoLabel:
+                        text: "Or, connect to recape-server.boyne.dev in Minecraft Java Edition using the account you want to use with ReCape and type the code you receive here."
+                    AccountField:
+                        id: rc_code
+                        multiline: False
+                        hint_text: "Your Special Code"
+                    AccountButton:
+                        text: "Login with Code"
+                        on_release: app.run_with_popup(recape.API.attempt_login_code, "Authenticating with server code...", [root.ids.mc_username.text, root.ids.rc_code.text], True)
+
+    TabbedPanelItem:
+        text: "Install"
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+
+            GridLayout:
+                padding: [20, 20, 20, 20]
+                cols: 1
+                InfoLabel:
+                    text: "To install ReCape, we edit a file on your computer known as the hosts file. This file lets us redirect OptiFine's servers to ours, so we can provide custom capes and 3D models."
+                
+                Spacer:
+                
+                AutoButton:
+                    text: "Install"
+                    on_release: app.run_with_popup(installer.install, "Installing...", [], True)
+                AutoButton:
+                    text: "Uninstall"
+                    on_release: app.run_with_popup(installer.uninstall, "Uninstalling...", [], True)
+
+    TabbedPanelItem:
+        id: cape_tab
+        text: "Cape"
+        BoxLayout:
+
+            orientation: "vertical"
+
+            ScrollView:
+                size_hint: (1, 1)
+                do_scroll_x: False
+                do_scroll_y: True
+                StackLayout:
+                    id: capes
+                    size_hint_y: None
+                    height: self.minimum_height
+
+                    padding: [10, 10, 10, 10]
+                    spacing: [10, 10]
+
+    TabbedPanelItem:
+        id: model_tab
+        text: "Models"
+        BoxLayout:
+
+            orientation: "vertical"
+
+            ScrollView:
+                size_hint: (1, 1)
+                do_scroll_x: False
+                do_scroll_y: True
+                StackLayout:
+                    id: models
+                    size_hint_y: None
+                    height: self.minimum_height
+
+                    padding: [10, 10, 10, 10]
+                    spacing: [10, 10]
+
+    TabbedPanelItem:
+        text: "Help"
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+            size_hint_y: 1
+            GridLayout:
+                padding: [20, 20, 20, 20]
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                InfoLabel:
+                    text: "Help"
+                AutoLabel:
+                    text: "What is this?"
+                    font_size: 20
+                AutoLabel:
+                    text: "ReCape is a service that allows you to obtain free capes and custom 3D models on any Minecraft client that includes OptiFine."
+                AutoLabel:
+                    text: "What do you mean by 3D models?"
+                    font_size: 20
+                AutoLabel:
+                    text: "They're custom objects that you can attach to any part of your player's body. They can be like a hat, an armband, an ankle monitor, or anything else you can think of that can be attached to you."
+                AutoLabel:
+                    text: "What do you mean by cape?"
+                    font_size: 20
+                AutoLabel:
+                    text: "A cape is like a banner that hangs off of your shoulders. They can have custom textures, which is what ReCape allows you to modify. As a side effect, you can modify Elytra textures as well!"
+                AutoLabel:
+                    text: "How does this work?"
+                    font_size: 20
+                AutoLabel:
+                    text: "There's a file on nearly all computers known as a hosts file. This file contains a list of IP addresses and URLs that map to each other. In layman's terms, it lets you change a website's URL to another website's URL. We utilize this by changing OptiFine's servers (s.optifine.net) to redirect to our server's IP address (where it is on the internet). Then, we host your custom capes so that when OptiFine fetches your cape, it will instead get the cape you uploaded. OptiFine also supports hosting 3D models, so we do that too."
+                AutoLabel:
+                    text: "Why do you need Administrator access in order to install?"
+                    font_size: 20
+                AutoLabel:
+                    text: "The aforementioned hosts file is protected because malicious programs would be able to cut off your access to the internet using it. ReCape needs to edit this file in order to redirect OptiFine's servers, and it needs administrator access to do so."
+                AutoLabel:
+                    text: "Can everybody see my custom capes and models?"
+                    font_size: 20
+                AutoLabel:
+                    text: "Due to how ReCape works, other players can only see you cape if they both have ReCape installed themselves and are using OptiFine or anb OptiFine-integrated client."
+                AutoLabel:
+                    text: "How much does this cost?"
+                    font_size: 20
+                AutoLabel:
+                    text: "ReCape is completely free, and it will stay that way forever. If you appreciate the ReCape project, you will be able to donate as soon as we get that set up."
+
+
+    TabbedPanelItem:
+        text: "About"
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+            GridLayout:
+                padding: [20, 20, 20, 20]
+                cols: 1
+                InfoLabel:
+                    text: "ReCape Desktop Client v1.1 by DedFishy"
+                AutoLabel:
+                    text: "It's gonna be alright\nIt's gonna be just fine\nIf anybody wondering how I know\nIt's written in the sky."
+                Spacer:
+                AutoButton:
+                    text: "Delete credentials (logs you out)"
+                    on_release: app.run_with_popup(recape.API.delete_credentials, "Deleting your login credentials (if they exist)...", [], True)

@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-
+from kivy_deps import sdl2, glew
 
 block_cipher = None
 
@@ -8,7 +8,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('assets', 'assets/')],
+    datas=[],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -35,12 +35,19 @@ exe = EXE(
     upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=False,
+    console=True,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    version='C:\\Users\\boyne\\AppData\\Local\\Temp\\bdb06a64-d678-4829-a33b-b066b0d4de01',
-    icon=['assets\\logo-plain.png'],
 )
+
+exe = EXE(pyz, Tree('./'),
+     a.scripts,
+     a.binaries,
+     a.zipfiles,
+     a.datas,
+     *[Tree(p) for p in (sdl2.dep_bins + glew.dep_bins)],
+     upx=True,
+     name='ReCape')
